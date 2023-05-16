@@ -31,7 +31,6 @@ INSTALLED_APPS = [
 
     'apps.application',
     'apps.users',
-    'apps.common',
 ]
 
 

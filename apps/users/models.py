@@ -2,8 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
 
-from apps.common.models import AbstractBaseModel
-
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
@@ -27,7 +25,11 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-class User(AbstractUser, AbstractBaseModel):
+class User(AbstractUser):
+    email = models.EmailField(
+        verbose_name='Адрес электронной почты',
+        max_length=60, unique=True,
+    )
     ROLE_CHOICES = [
         ('OPERATOR', 'Оператор'),
         ('BRIGADE', 'Бригада'),
@@ -47,13 +49,9 @@ class User(AbstractUser, AbstractBaseModel):
         return self.email
 
 
-class Operator(AbstractBaseModel):
+class Operator(AbstractUser):
     operator = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='operators')
-    email = models.EmailField(
-        verbose_name='email address',
-        max_length=60, unique=True,
-    )
     full_name = models.CharField(max_length=200, verbose_name='ФИО')
 
     class Meta:
@@ -64,7 +62,7 @@ class Operator(AbstractBaseModel):
         return self.full_name
 
 
-class Brigade(AbstractBaseModel):
+class Brigade(AbstractUser):
     name = models.CharField(
         max_length=255, unique=True, verbose_name='Название бригады')
     members = models.CharField(
@@ -78,11 +76,7 @@ class Brigade(AbstractBaseModel):
         return self.name
 
 
-class Client(AbstractBaseModel):
-    email = models.EmailField(
-        verbose_name='Адрес электронной почты',
-        max_length=60, unique=True,
-    )
+class Client(AbstractUser):
     company_name = models.CharField(
         max_length=100, verbose_name='Название компании')
     address = models.CharField(max_length=150, verbose_name='Адрес компании')

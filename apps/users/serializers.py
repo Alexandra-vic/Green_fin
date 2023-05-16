@@ -4,75 +4,101 @@ from django.contrib.auth.password_validation import validate_password
 from apps.users.models import User, Brigade, Company
 
 
+User = get_user_model()
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id','email', 'full_name', 'is_staff', )
+        fields = ('id', 'email', 'role')
 
 
-class RegisterSerializer(serializers.ModelSerializer):
+class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    password_confirmation = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = (
-            'email',
-            'full_name',
-            'password',
-            'password_confirmation'
-        )
-
-    def validate(self, attrs):
-        password = attrs.get('password')
-        password_confirmation = attrs.pop('password_confirmation', None)
-        if password != password_confirmation:
-            raise serializers.ValidationError("Passwords do not match")
-        return attrs
+        fields = ('email', 'password', 'role')
 
     def create(self, validated_data):
         user = User.objects.create_user(
             email=validated_data['email'],
             password=validated_data['password'],
+            role=validated_data['role']
         )
         return user
 
 
-class LoginSerializer(serializers.ModelSerializer):
+class OperatorRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Operator
+        fields = ('email', 'password', 'full_name')
+
+    def create(self, validated_data):
+        operator = Operator.objects.create_user(
+            email=validated_data['email'],
+            password=validated_data['password'],
+            full_name=validated_data['full_name'],
+            role='OPERATOR'
+        )
+        return operator
+
+
+class BrigadeRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Brigade
+        fields = ('name', 'password', 'members')
+
+    def create(self, validated_data):
+        brigade = Brigade.objects.create_user(
+            name=validated_data['name'],
+            password=validated_data['password'],
+            members=validated_data['members'],
+            role='BRIGADE'
+        )
+        return brigade
+
+
+class ClientRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Client
+        fields = ('email', 'password', 'company_name', 'address', 'phone')
+
+    def create(self, validated_data):
+        client = Client.objects.create_user(
+            email=validated_data['email'],
+            password=validated_data['password'],
+            company_name=validated_data['company_name'],
+            address=validated_data['address'],
+            phone=validated_data['phone'],
+            role='CLIENT'
+        )
+        return client
+
+
+class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
 
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
-        user = User.objects.filter(email=email).first()
 
-        if not user:
-            raise serializers.ValidationError("User does not exist.")
+        if email and password:
+            user = authenticate(request=self.context.get('request'), email=email, password=password)
+            
+            if not user:
+                message = 'Unable to log in with provided credentials.'
+                raise serializers.ValidationError(message, code='authorization')
+        else:
+            message = 'Must include "email" and "password".'
+            raise serializers.ValidationError(message, code='authorization')
 
-        if not user.check_password(password):
-            raise serializers.ValidationError("Invalid password.")
-
+        attrs['user'] = user
         return attrs
-
-
-class BrigadeSerializer(serializers.ModelSerializer):
-    members = UserSerializer(many=True)
-
-    class Meta:
-        model = Brigade
-        fields = ['id', 'name', 'members']
-
-
-class CompanySerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-
-    class Meta:
-        model = Company
-        fields = ['id', 'name', 'address', 'phone', 'user']
-
-
-class PasswordResetRequestSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PasswordResetRequest
-        fields = ['id', 'user', 'code', 'created_at']
