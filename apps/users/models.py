@@ -90,10 +90,9 @@ class Client(AbstractBaseModel):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='clients')
 
+    class Meta:
+        verbose_name = 'Клиент'
+        verbose_name_plural = 'Клиенты'
 
-
-
-class PasswordResetRequest(AbstractBaseModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    code = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.company_name
