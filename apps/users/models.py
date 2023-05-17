@@ -51,17 +51,10 @@ class User(AbstractUser):
         return self.email
 
 
-class Operator(AbstractUser):
-    operator = models.OneToOneField(
+class Operator(models.Model):
+    operator = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='operator_profile')
     full_name = models.CharField(max_length=200, verbose_name='ФИО')
-    groups = models.ManyToManyField(
-        Group, verbose_name='Группы', related_name='operator_profiles'
-    )
-    user_permissions = models.ManyToManyField(
-        Permission, verbose_name='Права доступа',
-        related_name='operator_profiles'
-    )
 
     class Meta:
         verbose_name = 'Оператор'
@@ -71,18 +64,11 @@ class Operator(AbstractUser):
         return self.full_name
 
 
-class Brigade(AbstractUser):
+class Brigade(models.Model):
     name = models.CharField(
         max_length=255, unique=True, verbose_name='Название бригады')
     members = models.CharField(
         max_length=255, verbose_name='Список участников бригады')
-    groups = models.ManyToManyField(
-        Group, verbose_name='Группы', related_name='brigade_groups'
-    )
-    user_permissions = models.ManyToManyField(
-        Permission, verbose_name='Права доступа',
-        related_name='brigade_user_permissions'
-    )
 
     class Meta:
         verbose_name = 'Бригада'
@@ -92,20 +78,13 @@ class Brigade(AbstractUser):
         return self.name
 
 
-class Client(AbstractUser):
+class Client(models.Model):
     company_name = models.CharField(
         max_length=100, verbose_name='Название компании')
     address = models.CharField(max_length=150, verbose_name='Адрес компании')
     phone = models.CharField(max_length=50, verbose_name='Номер телефона')
-    user = models.OneToOneField(
+    user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='client_profile')
-    groups = models.ManyToManyField(
-        Group, verbose_name='Группы', related_name='client_groups'
-    )
-    user_permissions = models.ManyToManyField(
-        Permission, verbose_name='Права доступа',
-        related_name='client_user_permissions'
-    )
 
     class Meta:
         verbose_name = 'Клиент'

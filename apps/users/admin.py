@@ -25,17 +25,17 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Operator)
 class OperatorAdmin(admin.ModelAdmin):
-    list_display = ('full_name',)
+    list_display = ('email', 'full_name', )
     search_fields = ('full_name',)
 
 
 @admin.register(Brigade)
 class BrigadeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'members')
+    list_display = ('name', 'members', )
     search_fields = ('name',)
 
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('company_name', 'address', 'phone')
+    list_display = ('email', 'company_name', 'address', 'phone', )
     search_fields = ('company_name',)
