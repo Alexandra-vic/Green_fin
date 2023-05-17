@@ -44,4 +44,3 @@ class Application(models.Model):
     class Meta:
         verbose_name = 'Заявка'
         verbose_name_plural = 'Заявки'
-
