@@ -1,150 +1,119 @@
 import jwt
 
 from django.shortcuts import get_object_or_404
-
+from django.contrib.auth.models import update_last_login
 from rest_framework import generics, viewsets, permissions
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated, BasePermission
 from rest_framework_simplejwt.tokens import RefreshToken
 
+
 from apps.users.models import User
+from apps.users.models import Operator, Brigade, Client
 from apps.users.serializers import (
     UserSerializer,
-    RegisterSerializer,
-    LoginSerializer,
+    UserRegistrationSerializer,
+    OperatorRegistrationSerializer,
+    BrigadeRegistrationSerializer,
+    ClientRegistrationSerializer,
+    UserLoginSerializer
 )
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = (permissions.IsAdminUser,)
+class UserLoginView(generics.CreateAPIView):
+    serializer_class = UserLoginSerializer
 
-
-class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = RegisterSerializer
-
-    def post(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        refresh = RefreshToken.for_user(user)
+        user = serializer.validated_data['user']
 
+        if not user.is_active:
+            return Response(
+                {'error': 'User account is disabled.'},
+                status=status.HTTP_401_UNAUTHORIZED)
+
+        refresh = RefreshToken.for_user(user)
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED)
+        })
 
 
-class LoginView(generics.GenericAPIView):
-    serializer_class = LoginSerializer
+class OperatorPermission(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.role == 'OPERATOR'
 
-    def post(self, request, *args, **kwargs):
+
+class OperatorViewSet(viewsets.ModelViewSet):
+    queryset = Operator.objects.all()
+    serializer_class = OperatorRegistrationSerializer
+    permission_classes = [OperatorPermission]
+
+    def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = get_object_or_404(
-            User, email=serializer.data.get('email')
-        )
-        refresh = RefreshToken.for_user(user)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
 
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_200_OK)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class RegisterCompanyView(APIView):
-    permission_classes = [AllowAny]
+class BrigadePermission(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:
+            return request.user.role == 'OPERATOR'
+        return True
 
-    def post(self, request):
-        serializer = CompanySerializer(data=request.data)
-        if serializer.is_valid():
-            user = User.objects.create_user(
-                email=request.data['user']['email'],
-                username=request.data['user']['email'],
-                password=request.data['user']['password'],
-                full_name=request.data['user']['full_name'],
-                is_operator=False,
-                is_technician=False
-            )
-            company = serializer.save(user=user)
-            return Response(CompanySerializer(company).data, status=status.HTTP_201_CREATED)
+
+class BrigadeViewSet(viewsets.ModelViewSet):
+    queryset = Brigade.objects.all()
+    serializer_class = BrigadeRegistrationSerializer
+
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [IsAuthenticated]
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            permission_classes = [OperatorPermission]
+        return [permission() for permission in permission_classes]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-
-class RegisterBrigadeView(APIView):
+class ClientViewSet(viewsets.ModelViewSet):
+    queryset = Client.objects.all()
+    serializer_class = ClientRegistrationSerializer
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        if not request.user.is_operator:
-            return Response({'detail': 'Only operators can register brigades'}, status=status.HTTP_403_FORBIDDEN)
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
 
-        serializer = BrigadeSerializer(data=request.data)
-        if serializer.is_valid():
-            members = serializer.validated_data.pop('members')
-            brigade = Brigade.objects.create(**serializer.validated_data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-            for member_data in members:
-                member = User.objects.create_user(
-                    email=member_data['email'],
-                    username=member_data['email'],
-                    password=member_data['password'],
-                    full_name=member_data['full_name'],
-                    is_operator=False,
-                    is_technician=True
-                )
-                brigade.members.add(member)
+# class RegisterView(generics.CreateAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = RegisterSerializer
 
-            return Response(BrigadeSerializer(brigade).data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.save()
+#         refresh = RefreshToken.for_user(user)
 
-
-
-class PasswordResetRequestView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        email = request.data.get('email')
-        user = get_object_or_404(User, email=email)
-
-        token_generator = PasswordResetTokenGenerator()
-        code = token_generator.make_token(user)
-
-        reset_request = PasswordResetRequest.objects.create(user=user, code=code)
-
-        send_mail(
-            'Запрос на сброс пароля',
-            f'Ваш код для сброса пароля: {reset_request.code}',
-            'noreply@example.com',
-            [user.email],
-            fail_silently=False
-        )
-
-        return Response({'detail': 'Код для сброса пароля был отправлен на ваш электронный адрес.'})
-
-
-class PasswordResetView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        email = request.data.get('email')
-        code = request.data.get('code')
-        password = request.data.get('password')
-
-        user = get_object_or_404(User, email=email)
-        reset_request = get_object_or_404(PasswordResetRequest, user=user, code=code)
-
-        token_generator = PasswordResetTokenGenerator()
-        if not token_generator.check_token(user, code):
-            return Response({'detail': 'Неверный код сброса пароля.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        user.set_password(password)
-        user.save()
-
-        reset_request.delete()
-
-        return Response({'detail': 'Пароль был успешно сброшен.'})
+#         return Response({
+#             'refresh': str(refresh),
+#             'access': str(refresh.access_token),
+#         }, status=status.HTTP_201_CREATED)
