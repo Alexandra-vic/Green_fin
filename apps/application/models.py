@@ -45,20 +45,3 @@ class Application(models.Model):
         verbose_name = 'Заявка'
         verbose_name_plural = 'Заявки'
 
-
-class Team(models.Model):
-    name = models.CharField(
-        max_length=65, verbose_name='Название бригады'
-    )
-    phone = models.CharField(
-        max_length=15, validators=[RegexValidator(r'^[0-9()+]+$', 'Enter a valid phone number.')],
-        verbose_name='Номер телефона',
-    )
-    quantity = models.IntegerField(verbose_name='Количество сотрудников')
-
-    def __str__(self):
-        return self.name
-    
-    class Meta:
-        verbose_name = 'Бригада'
-        verbose_name_plural = 'Бригады'
