@@ -1,19 +1,11 @@
-import jwt
-
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import update_last_login
-from rest_framework import generics, viewsets, permissions
+from rest_framework import generics, viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, BasePermission
 from rest_framework_simplejwt.tokens import RefreshToken
 
-
-from apps.users.models import User
 from apps.users.models import Operator, Brigade, Client
 from apps.users.serializers import (
-    UserSerializer,
-    UserRegistrationSerializer,
     OperatorRegistrationSerializer,
     BrigadeRegistrationSerializer,
     ClientRegistrationSerializer,

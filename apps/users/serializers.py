@@ -1,10 +1,7 @@
 from rest_framework import serializers
-from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth import authenticate
 
-from apps.users.models import User, Brigade, Company
-
-
-User = get_user_model()
+from apps.users.models import User, Operator, Brigade, Client
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -18,7 +15,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'role')
+        fields = ('email', 'role', 'password', )
 
     def create(self, validated_data):
         user = User.objects.create_user(
@@ -34,7 +31,7 @@ class OperatorRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Operator
-        fields = ('email', 'password', 'full_name')
+        fields = ('email', 'full_name', 'password', )
 
     def create(self, validated_data):
         operator = Operator.objects.create_user(
@@ -51,7 +48,7 @@ class BrigadeRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Brigade
-        fields = ('name', 'password', 'members')
+        fields = ('name', 'members', 'password', )
 
     def create(self, validated_data):
         brigade = Brigade.objects.create_user(
@@ -68,7 +65,7 @@ class ClientRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Client
-        fields = ('email', 'password', 'company_name', 'address', 'phone')
+        fields = ('email', 'company_name', 'address', 'phone',  'password',)
 
     def create(self, validated_data):
         client = Client.objects.create_user(
@@ -91,13 +88,15 @@ class UserLoginSerializer(serializers.Serializer):
         password = attrs.get('password')
 
         if email and password:
-            user = authenticate(request=self.context.get('request'), email=email, password=password)
-            
+            user = authenticate(
+                request=self.context.get('request'),
+                email=email, password=password)
+
             if not user:
-                message = 'Unable to log in with provided credentials.'
+                message = 'Не удается войти в систему с предоставленными учетными данными.'
                 raise serializers.ValidationError(message, code='authorization')
         else:
-            message = 'Must include "email" and "password".'
+            message = 'Должен содержать "адрес электронной почты" и "пароль".'
             raise serializers.ValidationError(message, code='authorization')
 
         attrs['user'] = user

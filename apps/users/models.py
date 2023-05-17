@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import (
+    AbstractUser, BaseUserManager,  Group, Permission)
 from django.utils.translation import gettext_lazy as _
 
 
@@ -26,6 +27,7 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractUser):
+    username = None
     email = models.EmailField(
         verbose_name='Адрес электронной почты',
         max_length=60, unique=True,
@@ -51,8 +53,15 @@ class User(AbstractUser):
 
 class Operator(AbstractUser):
     operator = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name='operators')
+        User, on_delete=models.CASCADE, related_name='operator_profile')
     full_name = models.CharField(max_length=200, verbose_name='ФИО')
+    groups = models.ManyToManyField(
+        Group, verbose_name='Группы', related_name='operator_profiles'
+    )
+    user_permissions = models.ManyToManyField(
+        Permission, verbose_name='Права доступа',
+        related_name='operator_profiles'
+    )
 
     class Meta:
         verbose_name = 'Оператор'
@@ -67,6 +76,13 @@ class Brigade(AbstractUser):
         max_length=255, unique=True, verbose_name='Название бригады')
     members = models.CharField(
         max_length=255, verbose_name='Список участников бригады')
+    groups = models.ManyToManyField(
+        Group, verbose_name='Группы', related_name='brigade_groups'
+    )
+    user_permissions = models.ManyToManyField(
+        Permission, verbose_name='Права доступа',
+        related_name='brigade_user_permissions'
+    )
 
     class Meta:
         verbose_name = 'Бригада'
@@ -82,7 +98,14 @@ class Client(AbstractUser):
     address = models.CharField(max_length=150, verbose_name='Адрес компании')
     phone = models.CharField(max_length=50, verbose_name='Номер телефона')
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name='clients')
+        User, on_delete=models.CASCADE, related_name='client_profile')
+    groups = models.ManyToManyField(
+        Group, verbose_name='Группы', related_name='client_groups'
+    )
+    user_permissions = models.ManyToManyField(
+        Permission, verbose_name='Права доступа',
+        related_name='client_user_permissions'
+    )
 
     class Meta:
         verbose_name = 'Клиент'
