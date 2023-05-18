@@ -1,82 +1,98 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 
-from apps.users.models import User, Operator, Brigade, Client
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'email', 'role')
-
-
-class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = User
-        fields = ('email', 'role', 'password', )
-
-    def create(self, validated_data):
-        user = User.objects.create_user(
-            email=validated_data['email'],
-            password=validated_data['password'],
-            role=validated_data['role']
-        )
-        return user
+from apps.users.models import User
 
 
 class OperatorRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    password_confirmation = serializers.CharField(write_only=True)
 
     class Meta:
-        model = Operator
-        fields = ('email', 'full_name', 'password', )
+        model = User
+        fields = ('email', 'full_name', 'password', 'password_confirmation', )
+
+    def validate(self, attrs):
+        password = attrs.get('password')
+        password_confirmation = attrs.pop('password_confirmation', None)
+        if password != password_confirmation:
+            raise serializers.ValidationError("Пароли не совпадают")
+        return attrs
 
     def create(self, validated_data):
-        operator = Operator.objects.create_user(
+        user = User.objects.create_user(
             email=validated_data['email'],
-            password=validated_data['password'],
             full_name=validated_data['full_name'],
-            role='OPERATOR'
+            password=validated_data['password'],
+
         )
-        return operator
+        return user
 
 
 class BrigadeRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    password_confirmation = serializers.CharField(write_only=True)
 
     class Meta:
-        model = Brigade
-        fields = ('name', 'members', 'password', )
+        model = User
+        fields = (
+            'email',
+            'brigades_name',
+            'brigades_list',
+            'password',
+            'password_confirmation',
+        )
+
+    def validate(self, attrs):
+        password = attrs.get('password')
+        password_confirmation = attrs.pop('password_confirmation', None)
+        if password != password_confirmation:
+            raise serializers.ValidationError("Пароли не совпадают")
+        return attrs
 
     def create(self, validated_data):
-        brigade = Brigade.objects.create_user(
-            name=validated_data['name'],
+        user = User.objects.create_user(
+            email=validated_data['email'],
+            brigades_name=validated_data['brigades_name'],
+            brigades_list=validated_data['brigades_list'],
             password=validated_data['password'],
-            members=validated_data['members'],
-            role='BRIGADE'
+
         )
-        return brigade
+        return user
 
 
 class ClientRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    password_confirmation = serializers.CharField(write_only=True)
 
     class Meta:
-        model = Client
-        fields = ('email', 'company_name', 'address', 'phone',  'password',)
+        model = User
+        fields = (
+            'email',
+            'company_name',
+            'address',
+            'phone',
+            'password',
+            'password_confirmation',
+        )
+
+    def validate(self, attrs):
+        password = attrs.get('password')
+        password_confirmation = attrs.pop('password_confirmation', None)
+        if password != password_confirmation:
+            raise serializers.ValidationError("Пароли не совпадают")
+        return attrs
 
     def create(self, validated_data):
-        client = Client.objects.create_user(
+        user = User.objects.create_user(
             email=validated_data['email'],
-            password=validated_data['password'],
             company_name=validated_data['company_name'],
             address=validated_data['address'],
             phone=validated_data['phone'],
-            role='CLIENT'
+            password=validated_data['password'],
+
         )
-        return client
+        return user
 
 
 class UserLoginSerializer(serializers.Serializer):
@@ -86,6 +102,7 @@ class UserLoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
+        user = User.objects.filter(email=email).first()
 
         if email and password:
             user = authenticate(
@@ -101,3 +118,12 @@ class UserLoginSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+
+class ResetPasswordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'email',
+        ]

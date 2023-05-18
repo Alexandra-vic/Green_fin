@@ -1,41 +1,71 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from apps.users.models import User, Operator, Brigade, Client
+from apps.users.models import User
 
 
-@admin.register(User)
-class CustomUserAdmin(UserAdmin):
-    list_display = ('email', 'role', 'is_staff', 'is_superuser')
-    list_filter = ('role', 'is_staff', 'is_superuser')
+class UserAdmin(UserAdmin):
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Permissions', {'fields': ('role', 'is_staff', 'is_superuser')}),
+        (None, {'fields': ('email', 'password',)}),
+        ('Personal info', {'fields': (
+            'full_name',
+            'brigades_name',
+            'brigades_list',
+            'company_name',
+            'address',
+            'phone',
+    
+        )}),
+        ('Permissions', {'fields': (
+            'is_operator',
+            'is_brigade',
+            'is_client',
+        )}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': (
-                'email', 'password1', 'password2',
-                'role', 'is_staff', 'is_superuser'),
+            'fields': ('email', 'password1', 'password2',),
         }),
     )
-    search_fields = ('email',)
-    ordering = ('email',)
+    list_display = (
+        'email',
+        'full_name',
+        'brigades_name',
+        'brigades_list',
+        'company_name',
+        'address',
+        'phone',
+    )
 
 
-@admin.register(Operator)
-class OperatorAdmin(admin.ModelAdmin):
-    list_display = ('email', 'full_name', )
-    search_fields = ('full_name',)
+# class OperatorAdmin(admin.ModelAdmin):
+#     list_display = (
+#         'email',
+#         'full_name',
+#         'password',
+#     )
 
 
-@admin.register(Brigade)
-class BrigadeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'members', )
-    search_fields = ('name',)
+# class BrigadeAdmin(admin.ModelAdmin):
+#     list_display = (
+#         'email',
+#         'brigades_name',
+#         'brigades_list',
+#         'password',
+#     )
 
 
-@admin.register(Client)
-class ClientAdmin(admin.ModelAdmin):
-    list_display = ('email', 'company_name', 'address', 'phone', )
-    search_fields = ('company_name',)
+# class ClientAdmin(admin.ModelAdmin):
+#     list_display = (
+#         'email',
+#         'company_name',
+#         'address',
+#         'phone',
+#         'password',
+#     )
+
+
+admin.site.register(User, UserAdmin)
+# admin.site.register(User, OperatorAdmin)
+# admin.site.register(User, BrigadeAdmin)
+# admin.site.register(User, ClientAdmin)

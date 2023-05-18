@@ -1,6 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import (
-    AbstractUser, BaseUserManager,  Group, Permission)
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
 
 
@@ -27,17 +26,37 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    username = None
     email = models.EmailField(
         verbose_name='Адрес электронной почты',
         max_length=60, unique=True,
     )
-    ROLE_CHOICES = [
-        ('OPERATOR', 'Оператор'),
-        ('BRIGADE', 'Бригада'),
-        ('CLIENT', 'Клиент'),
-    ]
-    role = models.CharField(max_length=100, choices=ROLE_CHOICES)
+    full_name = models.CharField(
+        max_length=200, blank=True,
+        null=True, verbose_name='ФИО'
+    )
+    brigades_name = models.CharField(
+        max_length=100, blank=True,
+        null=True, verbose_name='Название бригады'
+    )
+    brigades_list = models.CharField(
+        max_length=255, blank=True,
+        null=True, verbose_name='Список участников бригады'
+    )
+    company_name = models.CharField(
+        max_length=100, blank=True,
+        null=True, verbose_name='Название компании'
+    )
+    address = models.CharField(
+        max_length=150, blank=True,
+        null=True, verbose_name='Адрес компании'
+    )
+    phone = models.CharField(
+        max_length=50, blank=True,
+        null=True, verbose_name='Номер телефона'
+    )
+    is_operator = models.BooleanField(default=False)
+    is_brigade = models.BooleanField(default=False)
+    is_client = models.BooleanField(default=False)
 
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
@@ -49,46 +68,3 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
-
-
-class Operator(models.Model):
-    operator = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='operator_profile')
-    full_name = models.CharField(max_length=200, verbose_name='ФИО')
-
-    class Meta:
-        verbose_name = 'Оператор'
-        verbose_name_plural = 'Операторы'
-
-    def __str__(self):
-        return self.full_name
-
-
-class Brigade(models.Model):
-    name = models.CharField(
-        max_length=255, unique=True, verbose_name='Название бригады')
-    members = models.CharField(
-        max_length=255, verbose_name='Список участников бригады')
-
-    class Meta:
-        verbose_name = 'Бригада'
-        verbose_name_plural = 'Бригады'
-
-    def __str__(self):
-        return self.name
-
-
-class Client(models.Model):
-    company_name = models.CharField(
-        max_length=100, verbose_name='Название компании')
-    address = models.CharField(max_length=150, verbose_name='Адрес компании')
-    phone = models.CharField(max_length=50, verbose_name='Номер телефона')
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='client_profile')
-
-    class Meta:
-        verbose_name = 'Клиент'
-        verbose_name_plural = 'Клиенты'
-
-    def __str__(self):
-        return self.company_name

@@ -14,5 +14,6 @@ router.register(r'clients', views.ClientViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('login/', views.UserLoginView.as_view(), name='login')
+    path('login/', views.UserLoginView.as_view(), name='login'),
+    path('resetpassword/', views.ResetPasswordAPIView.as_view()),
 ]
