@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.application.models import Application, Team
+from apps.application.models import Application
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
