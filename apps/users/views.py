@@ -1,8 +1,8 @@
 from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework import generics, viewsets, permissions
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.users.models import User

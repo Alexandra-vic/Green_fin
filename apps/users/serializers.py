@@ -10,7 +10,10 @@ class OperatorRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'full_name', 'password', 'password_confirmation', )
+        fields = (
+            'email', 'full_name', 'is_operator',
+            'password', 'password_confirmation',
+        )
 
     def validate(self, attrs):
         password = attrs.get('password')
@@ -23,6 +26,7 @@ class OperatorRegistrationSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(
             email=validated_data['email'],
             full_name=validated_data['full_name'],
+
             password=validated_data['password'],
 
         )
@@ -36,11 +40,8 @@ class BrigadeRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'email',
-            'brigades_name',
-            'brigades_list',
-            'password',
-            'password_confirmation',
+            'email', 'brigades_name', 'brigades_list',
+            'is_brigade', 'password', 'password_confirmation',
         )
 
     def validate(self, attrs):
@@ -68,11 +69,8 @@ class ClientRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'email',
-            'company_name',
-            'address',
-            'phone',
-            'password',
+            'email', 'company_name', 'address',
+            'phone', 'is_client', 'password',
             'password_confirmation',
         )
 

@@ -13,7 +13,7 @@ class UserAdmin(UserAdmin):
             'company_name',
             'address',
             'phone',
-    
+
         )}),
         ('Permissions', {'fields': (
             'is_operator',
@@ -38,34 +38,4 @@ class UserAdmin(UserAdmin):
     )
 
 
-# class OperatorAdmin(admin.ModelAdmin):
-#     list_display = (
-#         'email',
-#         'full_name',
-#         'password',
-#     )
-
-
-# class BrigadeAdmin(admin.ModelAdmin):
-#     list_display = (
-#         'email',
-#         'brigades_name',
-#         'brigades_list',
-#         'password',
-#     )
-
-
-# class ClientAdmin(admin.ModelAdmin):
-#     list_display = (
-#         'email',
-#         'company_name',
-#         'address',
-#         'phone',
-#         'password',
-#     )
-
-
 admin.site.register(User, UserAdmin)
-# admin.site.register(User, OperatorAdmin)
-# admin.site.register(User, BrigadeAdmin)
-# admin.site.register(User, ClientAdmin)
