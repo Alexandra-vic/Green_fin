@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext_lazy as _
+from ckeditor.fields import RichTextField
 
 
 class CustomUserManager(BaseUserManager):
@@ -38,7 +39,7 @@ class User(AbstractUser):
         max_length=100, blank=True,
         null=True, verbose_name='Название бригады'
     )
-    brigades_list = models.CharField(
+    brigades_list = RichTextField(
         max_length=255, blank=True,
         null=True, verbose_name='Список участников бригады'
     )
@@ -57,6 +58,7 @@ class User(AbstractUser):
     is_operator = models.BooleanField(default=False)
     is_brigade = models.BooleanField(default=False)
     is_client = models.BooleanField(default=False)
+    
 
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'

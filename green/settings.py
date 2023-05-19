@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'djoser',
     'corsheaders',
+    'ckeditor',
 
     'apps.application',
     'apps.users',
@@ -172,7 +173,46 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+
+MEDIA_URL = "/uploads/"
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_JQUERY_URL = os.path.join(STATIC_URL, 'js/jquery.min.js')
+CKEDITOR_CONFIGS = {
+    'default': {
+        'width': '100%',
+    },
+}
+
+
+CKEDITOR_UPLOAD_PATH = 'uploads/ckeditor/'
+CKEDITOR_IMAGE_BACKEND = 'pillow'
+CKEDITOR_ALLOW_NONIMAGE_FILES = False
+CKEDITOR_RESTRICT_BY_USER = True
+CKEDITOR_BROWSE_SHOW_DIRS = True
+CKEDITOR_RESTRICT_BY_DATE = True
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-',
+             'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-',
+             'Link', 'Unlink', 'Anchor'],
+            ['Image', 'Table', 'HorizontalRule', 'SpecialChar', 'Blockquote', '-',
+             'Source'],
+        ],
+        'height': 300,
+        'width': '100%',
+        'forcePasteAsPlainText': True,
+        'removePlugins': 'stylesheetparser',
+    },
+}
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
