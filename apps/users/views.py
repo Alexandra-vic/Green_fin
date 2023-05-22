@@ -88,16 +88,6 @@ class ClientRegisterView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
-class ClientListView(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = ClientRegistrationSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-class ClientDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = ClientRegistrationSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class UserLoginView(generics.CreateAPIView):
