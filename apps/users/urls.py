@@ -1,8 +1,18 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 
 from apps.users import views
 
+
 app_name = 'users'
+
+
+router = routers.DefaultRouter()
+router.register(r'client-profile', views.ClientProfileViewSet, basename='client-profile')
+
+urlpatterns = [
+    path('', include(router.urls)),
+]
 
 
 urlpatterns = [
@@ -14,9 +24,10 @@ urlpatterns = [
     path('brigades/<int:pk>/', views.BrigadeDetailView.as_view(), name='brigade-detail'),
     path('brigades/register/', views.BrigadeRegisterView.as_view(), name='brigade-reg'),
 
-    path('clients/', views.ClientListView.as_view(), name='client-list'),
-    path('clients/<int:pk>/', views.ClientDetailView.as_view(), name='client-detail'),
-    path('clients/register/', views.ClientRegisterView.as_view(), name='client-reg'),
+    path('', include(router.urls)),
+    # path('clients/', views.ClientListView.as_view(), name='client-list'),
+    # path('clients/<int:pk>/', views.ClientDetailView.as_view(), name='client-detail'),
+    # path('clients/register/', views.ClientRegisterView.as_view(), name='client-reg'),
 
     path('login/', views.UserLoginView.as_view(), name='login'),
     path('resetpassword/', views.ResetPasswordAPIView.as_view(), name='reset-password'),
