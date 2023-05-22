@@ -70,7 +70,7 @@ class ClientRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'email', 'company_name', 'address',
-            'phone', 'password',
+            'phone', 'is_client', 'password',
             'password_confirmation',
         )
 
