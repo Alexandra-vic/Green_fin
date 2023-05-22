@@ -88,6 +88,26 @@ class ClientRegisterView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
+class ClientProfileViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = ClientRegistrationSerializer
+    permission_classes = [permissions.IsAuthenticated, ]
+
+    @action(detail=False, methods=['get'])
+    def profile(self, request, user_id=None):
+        queryset = User.objects.filter(id=user_id or request.user.id)
+        user = get_object_or_404(queryset)
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['put'])
+    def edit(self, request, user_id=None):
+        queryset = User.objects.filter(id=user_id or request.user.id)
+        user = get_object_or_404(queryset)
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
 class UserLoginView(generics.CreateAPIView):
