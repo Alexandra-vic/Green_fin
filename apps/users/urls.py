@@ -27,7 +27,7 @@ urlpatterns = [
     path('', include(router.urls)),
     # path('clients/', views.ClientListView.as_view(), name='client-list'),
     # path('clients/<int:pk>/', views.ClientDetailView.as_view(), name='client-detail'),
-    # path('clients/register/', views.ClientRegisterView.as_view(), name='client-reg'),
+    path('clients/register/', views.ClientRegisterView.as_view(), name='client-reg'),
 
     path('login/', views.UserLoginView.as_view(), name='login'),
     path('resetpassword/', views.ResetPasswordAPIView.as_view(), name='reset-password'),
