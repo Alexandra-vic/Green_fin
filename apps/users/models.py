@@ -57,8 +57,6 @@ class User(AbstractUser):
     )
     is_operator = models.BooleanField(default=False)
     is_brigade = models.BooleanField(default=False)
-    is_client = models.BooleanField(default=False)
-    
 
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'

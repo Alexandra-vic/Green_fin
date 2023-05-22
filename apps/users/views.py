@@ -10,12 +10,7 @@ from apps.users.serializers import (
     ClientRegistrationSerializer, UserLoginSerializer, ResetPasswordSerializer
 )
 
-
-class OperatorPermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:
-            return request.user.is_operator
-        return True
+from apps.users.permissions import OperatorPermission
 
 
 class OperatorListView(generics.ListAPIView):
