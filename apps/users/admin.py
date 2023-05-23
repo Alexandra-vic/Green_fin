@@ -16,11 +16,6 @@ class UserAdmin(UserAdmin):
             'user_type',
 
         )}),
-        # ('Permissions', {'fields': (
-        #     'is_operator',
-        #     'is_brigade',
-        #     'is_client'
-        # )}),
     )
     add_fieldsets = (
         (None, {
