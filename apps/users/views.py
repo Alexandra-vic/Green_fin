@@ -11,8 +11,23 @@ from apps.users.serializers import (
     OperatorRegistrationSerializer, BrigadeRegistrationSerializer,
     ClientRegistrationSerializer, UserLoginSerializer, ResetPasswordSerializer
 )
-
 from apps.users.permissions import OperatorPermission
+
+
+class BaseRegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = []
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_201_CREATED)
 
 
 class OperatorListView(generics.ListAPIView):
@@ -21,21 +36,9 @@ class OperatorListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class OperatorRegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
+class OperatorRegisterView(BaseRegisterView):
     serializer_class = OperatorRegistrationSerializer
     permission_classes = [OperatorPermission]
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED)
 
 
 class OperatorDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -44,21 +47,9 @@ class OperatorDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [OperatorPermission]
 
 
-class BrigadeRegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
+class BrigadeRegisterView(BaseRegisterView):
     serializer_class = BrigadeRegistrationSerializer
     permission_classes = [OperatorPermission]
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED)
 
 
 class BrigadeListView(generics.ListAPIView):
@@ -73,21 +64,9 @@ class BrigadeDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [OperatorPermission]
 
 
-class ClientRegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
+class ClientRegisterView(BaseRegisterView):
     serializer_class = ClientRegistrationSerializer
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED)
+    permission_classes = [permissions.AllowAny, ]
 
 
 class ClientProfileViewSet(viewsets.ModelViewSet):
