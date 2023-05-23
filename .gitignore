@@ -8,7 +8,7 @@ db.sqlite3
 .venv
 .venv3
 env/
-venv/
+/venv/
 venv
 ENV/
 env.bak/
