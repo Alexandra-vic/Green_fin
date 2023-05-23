@@ -16,7 +16,7 @@ from apps.users.permissions import OperatorPermission
 
 
 class OperatorListView(generics.ListAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.filter(is_operator=True)
     serializer_class = ClientRegistrationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -39,7 +39,7 @@ class OperatorRegisterView(generics.CreateAPIView):
 
 
 class OperatorDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.filter(is_operator=True)
     serializer_class = OperatorRegistrationSerializer
     permission_classes = [OperatorPermission]
 
@@ -62,13 +62,13 @@ class BrigadeRegisterView(generics.CreateAPIView):
 
 
 class BrigadeListView(generics.ListAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.filter(is_brigade=True)
     serializer_class = BrigadeRegistrationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class BrigadeDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.filter(is_brigade=True)
     serializer_class = BrigadeRegistrationSerializer
     permission_classes = [OperatorPermission]
 
@@ -91,7 +91,7 @@ class ClientRegisterView(generics.CreateAPIView):
 
 
 class ClientProfileViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.filter(is_client=True)
     serializer_class = ClientRegistrationSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 

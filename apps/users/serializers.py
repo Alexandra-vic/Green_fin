@@ -26,7 +26,7 @@ class OperatorRegistrationSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(
             email=validated_data['email'],
             full_name=validated_data['full_name'],
-
+            is_operator=validated_data['is_operator'],
             password=validated_data['password'],
 
         )
@@ -56,6 +56,7 @@ class BrigadeRegistrationSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             brigades_name=validated_data['brigades_name'],
             brigades_list=validated_data['brigades_list'],
+            is_brigade=validated_data['is_brigade'],
             password=validated_data['password'],
 
         )
@@ -81,12 +82,18 @@ class ClientRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Пароли не совпадают")
         return attrs
 
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Пользователь с таким email уже существует.")
+        return value
+
     def create(self, validated_data):
         user = User.objects.create_user(
             email=validated_data['email'],
             company_name=validated_data['company_name'],
             address=validated_data['address'],
             phone=validated_data['phone'],
+            is_client=validated_data['is_client'],
             password=validated_data['password'],
 
         )
