@@ -66,9 +66,6 @@ class User(AbstractUser):
         ('CLIENT', 'Client'),
     )
     user_type = models.CharField(max_length=200, choices=USER_TYPE)
-    # is_operator = models.BooleanField(default=False)
-    # is_brigade = models.BooleanField(default=False)
-    # is_client = models.BooleanField(default=False)
 
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
