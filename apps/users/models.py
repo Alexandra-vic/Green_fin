@@ -27,6 +27,10 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractUser):
+    username = models.CharField(
+        max_length=200, unique=False,
+        blank=True, null=True
+    )
     email = models.EmailField(
         verbose_name='Адрес электронной почты',
         max_length=60, unique=True,
@@ -55,9 +59,16 @@ class User(AbstractUser):
         max_length=50, blank=True,
         null=True, verbose_name='Номер телефона'
     )
-    is_operator = models.BooleanField(default=False)
-    is_brigade = models.BooleanField(default=False)
-    is_client = models.BooleanField(default=True)
+
+    USER_TYPE = (
+        ('OPERATOR', 'Operator'),
+        ('BRIGADE', 'Brigade'),
+        ('CLIENT', 'Client'),
+    )
+    user_type = models.CharField(max_length=200, choices=USER_TYPE)
+    # is_operator = models.BooleanField(default=False)
+    # is_brigade = models.BooleanField(default=False)
+    # is_client = models.BooleanField(default=False)
 
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'

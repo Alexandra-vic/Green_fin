@@ -11,7 +11,7 @@ class OperatorRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'email', 'full_name', 'is_operator',
+            'id', 'email', 'full_name', 'user_type',
             'password', 'password_confirmation',
         )
 
@@ -26,7 +26,7 @@ class OperatorRegistrationSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(
             email=validated_data['email'],
             full_name=validated_data['full_name'],
-            is_operator=validated_data['is_operator'],
+            user_type=validated_data['user_type'],
             password=validated_data['password'],
 
         )
@@ -40,8 +40,8 @@ class BrigadeRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'email', 'brigades_name', 'brigades_list',
-            'is_brigade', 'password', 'password_confirmation',
+            'id', 'email', 'brigades_name', 'user_type',
+            'password', 'password_confirmation',
         )
 
     def validate(self, attrs):
@@ -56,7 +56,7 @@ class BrigadeRegistrationSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             brigades_name=validated_data['brigades_name'],
             brigades_list=validated_data['brigades_list'],
-            is_brigade=validated_data['is_brigade'],
+            user_type=validated_data['user_type'],
             password=validated_data['password'],
 
         )
@@ -70,8 +70,8 @@ class ClientRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'email', 'company_name', 'address',
-            'phone', 'is_client', 'password',
+            'id', 'email', 'company_name', 'address',
+            'phone', 'password',
             'password_confirmation',
         )
 
@@ -87,17 +87,20 @@ class ClientRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Пользователь с таким email уже существует.")
         return value
 
-    def create(self, validated_data):
+    def create_client(self, validated_data):
+        validated_data['user_type'] = 'CLIENT'
         user = User.objects.create_user(
             email=validated_data['email'],
             company_name=validated_data['company_name'],
             address=validated_data['address'],
             phone=validated_data['phone'],
-            is_client=validated_data['is_client'],
             password=validated_data['password'],
-
+            user_type=validated_data['user_type'],
         )
         return user
+
+    def create(self, validated_data):
+        return self.create_client(validated_data)
 
 
 class UserLoginSerializer(serializers.Serializer):
