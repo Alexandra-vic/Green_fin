@@ -33,7 +33,6 @@ class OperatorRegistrationSerializer(BaseRegistrationSerializer):
         return user
 
 
-
 class BrigadeRegistrationSerializer(BaseRegistrationSerializer):
     class Meta(BaseRegistrationSerializer.Meta):
         fields = BaseRegistrationSerializer.Meta.fields + (
