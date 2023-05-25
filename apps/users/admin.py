@@ -13,12 +13,8 @@ class UserAdmin(UserAdmin):
             'company_name',
             'address',
             'phone',
+            'user_type',
 
-        )}),
-        ('Permissions', {'fields': (
-            'is_operator',
-            'is_brigade',
-            'is_client',
         )}),
     )
     add_fieldsets = (
@@ -35,6 +31,7 @@ class UserAdmin(UserAdmin):
         'company_name',
         'address',
         'phone',
+        'user_type',
     )
 
 
