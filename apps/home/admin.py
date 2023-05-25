@@ -1,9 +1,18 @@
 from django.contrib import admin
-from apps.home.models import Point, Section, Rules, Contact
+from apps.home.models import (
+    Point, Section, 
+    Rules, Contact,
+    Category,
+)    
 
 
 @admin.register(Point)
 class PointAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
     pass
 
 

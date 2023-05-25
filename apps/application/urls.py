@@ -1,13 +1,20 @@
 from django.urls import path
 from apps.application.views import (
-    ApplicationCreateAPIView,
-    ApplicationListAPIView,
-    ApplicationDetailView,
+    ClientApplicationListAPIView,
+    ClientApplicationCreateAPIView,
+    OperatorApplicationListAPIView,
+    OperatorApplicationUpdateAPIView,
+    BrigadeApplicationListAPIView,
+    BrigadeApplicationUpdateAPIView,
 )
 
 
 urlpatterns=[
-    path('application/create/', ApplicationCreateAPIView.as_view()),
-    path('applications/', ApplicationListAPIView.as_view()),
-    path('application/<int:pk>/', ApplicationDetailView.as_view()),
+    path('client/applications/', ClientApplicationListAPIView.as_view()),
+    path('client/application/create', ClientApplicationCreateAPIView.as_view()),
+
+    path('operator/appications/', OperatorApplicationListAPIView.as_view()),
+    path('operator/<int:pk>/', OperatorApplicationUpdateAPIView.as_view()),
+
+    path('brigade/applications/')
 ]

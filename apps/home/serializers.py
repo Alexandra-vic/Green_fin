@@ -2,7 +2,17 @@ from rest_framework import serializers
 from apps.home.models import (
     Section, Rules,
     Contact, Point,
+    Category,
 )
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = (
+            'id',
+            'name',
+        )
 
 
 class SectionSerializer(serializers.ModelSerializer):
@@ -12,6 +22,7 @@ class SectionSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'description',
+            'category',
         )
 
 

@@ -2,11 +2,28 @@ from django.db import models
 from django.core.validators import RegexValidator
 
 
+class Category(models.Model):
+    name = models.CharField(
+        max_length=70, verbose_name='Название'
+    )
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
+
 class Section(models.Model):
     title = models.CharField(
         max_length=65, verbose_name='Заголовок',
     )
     description = models.TextField(verbose_name='Текст')
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, 
+        related_name='section_name', verbose_name='Категория'
+    )
 
     def __str__(self):
         return self.title
