@@ -14,20 +14,20 @@ from apps.users.serializers import (
 from apps.users.permissions import OperatorPermission
 
 
-class BaseRegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    permission_classes = []
+# class BaseRegisterView(generics.CreateAPIView):
+#     queryset = User.objects.all()
+#     permission_classes = []
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        refresh = RefreshToken.for_user(user)
+#     def create(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.save()
+#         refresh = RefreshToken.for_user(user)
 
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED)
+#         return Response({
+#             'refresh': str(refresh),
+#             'access': str(refresh.access_token),
+#         }, status=status.HTTP_201_CREATED)
 
 
 class OperatorListView(generics.ListAPIView):
@@ -36,9 +36,23 @@ class OperatorListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class OperatorRegisterView(BaseRegisterView):
+class OperatorRegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
     serializer_class = OperatorRegistrationSerializer
     permission_classes = [OperatorPermission]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save(user_type='OPERATOR')
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            'user_id': user.id,
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'user_type': user.user_type,
+        }, status=status.HTTP_201_CREATED)
 
 
 class OperatorDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -47,9 +61,23 @@ class OperatorDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [OperatorPermission]
 
 
-class BrigadeRegisterView(BaseRegisterView):
+class BrigadeRegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
     serializer_class = BrigadeRegistrationSerializer
     permission_classes = [OperatorPermission]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save(user_type='BRIGADE')
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            'user_id': user.id,
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'user_type': user.user_type,
+        }, status=status.HTTP_201_CREATED)
 
 
 class BrigadeListView(generics.ListAPIView):
@@ -64,9 +92,23 @@ class BrigadeDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [OperatorPermission]
 
 
-class ClientRegisterView(BaseRegisterView):
+class ClientRegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
     serializer_class = ClientRegistrationSerializer
     permission_classes = [permissions.AllowAny, ]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save(user_type='CLIENT')
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            'user_id': user.id,
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'user_type': user.user_type,
+        }, status=status.HTTP_201_CREATED)
 
 
 class ClientProfileViewSet(viewsets.ModelViewSet):
@@ -106,8 +148,10 @@ class UserLoginView(generics.CreateAPIView):
 
         refresh = RefreshToken.for_user(user)
         return Response({
+            'user_id': user.id,
             'refresh': str(refresh),
             'access': str(refresh.access_token),
+            'user_type': user.user_type,
         }, status=status.HTTP_200_OK)
 
 

@@ -51,6 +51,7 @@ class ClientRegistrationSerializer(BaseRegistrationSerializer):
 
     class Meta(BaseRegistrationSerializer.Meta):
         fields = BaseRegistrationSerializer.Meta.fields + (
+            'email',
             'company_name', 'address', 'phone', )
 
     def validate_email(self, value):
@@ -60,8 +61,14 @@ class ClientRegistrationSerializer(BaseRegistrationSerializer):
         return value
 
     def create(self, validated_data):
-        validated_data['user_type'] = 'CLIENT'
-        return super().create(validated_data)
+            email = validated_data.get('email')
+            password = validated_data.get('password')
+            user = User.objects.create_user(
+                email=email,
+                password=password,
+                user_type='CLIENT'
+            )
+            return user
 
 
 class UserLoginSerializer(serializers.Serializer):
@@ -72,7 +79,40 @@ class UserLoginSerializer(serializers.Serializer):
         email = attrs.get('email')
         password = attrs.get('password')
         user = User.objects.filter(email=email).first()
+        if email and password:
+            user = authenticate(
+                request=self.context.get('request'),
+                email=email, password=password)
 
+            if not user:
+                message = 'Не удается войти в систему с предоставленными учетными данными.'
+                raise serializers.ValidationError(message, code='authorization')
+        else:
+            message = 'Должен содержать "адрес электронной почты" и "пароль".'
+            raise serializers.ValidationError(message, code='authorization')
+
+        attrs['user'] = user
+        return attrs
+
+
+class ResetPasswordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'email',
+        ]
+
+
+class UserLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        user = User.objects.filter(email=email).first()
+        print(user)
         if email and password:
             user = authenticate(
                 request=self.context.get('request'),
