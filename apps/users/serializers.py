@@ -28,7 +28,7 @@ class OperatorRegistrationSerializer(BaseRegistrationSerializer):
             'full_name', 'user_type',)
 
     def create(self, validated_data):
-        validated_data['user_type'] = self.Meta.model.USER_TYPE
+        validated_data['user_type'] = 'OPERATOR'
         user = User.objects.create_user(**validated_data)
         return user
 
@@ -79,40 +79,6 @@ class UserLoginSerializer(serializers.Serializer):
         email = attrs.get('email')
         password = attrs.get('password')
         user = User.objects.filter(email=email).first()
-        if email and password:
-            user = authenticate(
-                request=self.context.get('request'),
-                email=email, password=password)
-
-            if not user:
-                message = 'Не удается войти в систему с предоставленными учетными данными.'
-                raise serializers.ValidationError(message, code='authorization')
-        else:
-            message = 'Должен содержать "адрес электронной почты" и "пароль".'
-            raise serializers.ValidationError(message, code='authorization')
-
-        attrs['user'] = user
-        return attrs
-
-
-class ResetPasswordSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = [
-            'id',
-            'email',
-        ]
-
-
-class UserLoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField()
-
-    def validate(self, attrs):
-        email = attrs.get('email')
-        password = attrs.get('password')
-        user = User.objects.filter(email=email).first()
-        print(user)
         if email and password:
             user = authenticate(
                 request=self.context.get('request'),
