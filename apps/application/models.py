@@ -31,20 +31,20 @@ class Application(models.Model):
     started_create = models.DateTimeField(
         auto_now_add=True, verbose_name='Дата открытия'
     )
-    finished_application = models.DateTimeField(
-        auto_now=False, verbose_name='Дата закрытия'
-    )
+    finished_application = models.DateTimeField(verbose_name='Дата закрытия')
     client = models.ForeignKey(
         User, on_delete=models.CASCADE,
         limit_choices_to={'user_type': 'CLIENT'}, 
         related_name='applications_as_client',
         verbose_name='Клиент',
+        blank=True, null=True, 
     )
     operator = models.ForeignKey(
         User, on_delete=models.CASCADE,
         limit_choices_to={'user_type': 'OPERATOR'},
         related_name='applications_as_operator',
         verbose_name='Оператор', blank=True,
+        null=True,
     )
     brigade = models.ForeignKey(
         User, on_delete=models.SET_NULL,

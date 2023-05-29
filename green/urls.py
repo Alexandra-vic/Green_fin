@@ -21,8 +21,8 @@ schema_view = get_schema_view(
 
 api_v1 = [
     path('', include('apps.users.urls')),
-    path('applicate/', include('apps.application.urls')),
-    path('home/', include('apps.home.urls')),
+    path('', include('apps.application.urls')),
+    path('', include('apps.home.urls')),
 ]
 
 

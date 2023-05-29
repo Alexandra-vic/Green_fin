@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from apps.users.models import User
 
 
-class UsersAdmin(UserAdmin):
+class UserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password',)}),
         ('Personal info', {'fields': (
@@ -16,11 +16,6 @@ class UsersAdmin(UserAdmin):
             'user_type',
 
         )}),
-        # ('Permissions', {'fields': (
-        #     'is_operator',
-        #     'is_brigade',
-        #     'is_client'
-        # )}),
     )
     add_fieldsets = (
         (None, {

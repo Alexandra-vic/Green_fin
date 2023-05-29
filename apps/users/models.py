@@ -66,7 +66,6 @@ class User(AbstractUser):
         ('CLIENT', 'Client'),
     )
     user_type = models.CharField(max_length=200, choices=USER_TYPE)
-    
 
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
@@ -78,3 +77,4 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+    
