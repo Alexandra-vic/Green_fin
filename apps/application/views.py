@@ -2,11 +2,13 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import filters
 
 from apps.application.models import Application
 from apps.users.models import User
 from apps.users.serializers import BrigadeRegistrationSerializer
 from apps.application.serializers import ApplicationSerializer
+from django.http import JsonResponse
 
 
 class ClientApplicationCreateAPIView(generics.CreateAPIView):
@@ -29,6 +31,8 @@ class ClientApplicationListAPIView(generics.ListAPIView):
 class ApplicationListAPIView(generics.ListAPIView):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['status']
 
 
 class AssignOperatorAPIView(generics.UpdateAPIView):
@@ -39,12 +43,24 @@ class AssignOperatorAPIView(generics.UpdateAPIView):
         instance = self.get_object()
         instance.operator = request.user
         instance.save()
-        return self.partial_update(request, *args, **kwargs)
+        return JsonResponse({'message': 'success'}, status=200)
+
+
+class BrigadeStatusUpdateView(generics.UpdateAPIView):
+    queryset = User.objects.filter(user_type='BRIGADE')
+    serializer_class = ApplicationSerializer
+
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
 
 
 class BrigadeListAPIView(generics.ListAPIView):
     queryset = User.objects.filter(user_type='BRIGADE')
     serializer_class = BrigadeRegistrationSerializer
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+
 
 
 class AddBrigadeAPIView(generics.UpdateAPIView):
@@ -53,26 +69,41 @@ class AddBrigadeAPIView(generics.UpdateAPIView):
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
-        brigade_id = request.data.get('brigade_id') 
+        brigade_id = request.data.get('brigade')
+
 
         if brigade_id:
-            instance.brigade_id = brigade_id
+            
+            brigade = User.objects.filter(id=brigade_id, user_type='BRIGADE').first()
+
+            if not brigade:
+                return JsonResponse({'message': 'error', 'comment':'brigade not found'}, status=400)
+            
+            instance.brigade = brigade
             instance.save()
 
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-
-        return Response(serializer.data)
+            return JsonResponse({'message': 'success'}, status=200)
+        else:
+            return JsonResponse({'message': 'error', 'comment':'field brigade is required'}, status=400)
 
 
-class BrigadeApplicationsAPIView(generics.ListAPIView):
-    queryset = Application.objects.all()
-    serializer_class = ApplicationSerializer
+class BrigadeStatusAPIView(APIView):
+    def patch(self, request, pk):
+        try:
+            brigade = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({"error": "Пользователь не найден"}, status=status.HTTP_404_NOT_FOUND)
 
-    def get_queryset(self):
-        brigade = self.request.user
-        return super().get_queryset().filter(brigade=brigade) 
+        user = request.user
+        if user.user_type != 'BRIGADE':
+            return Response({"error": "Недопустимая роль пользователя"}, status=status.HTTP_400_BAD_REQUEST)
+
+        brigade_status = request.data.get('brigade_status')
+        if brigade_status is not None:
+            brigade.brigade_status = brigade_status
+            brigade.save()
+
+        return Response({"success": "Статус бригады успешно обновлен"})
 
 
 class ApplicationStatusUpdateAPIView(APIView):

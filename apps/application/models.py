@@ -31,7 +31,10 @@ class Application(models.Model):
     started_create = models.DateTimeField(
         auto_now_add=True, verbose_name='Дата открытия'
     )
-    finished_application = models.DateTimeField(verbose_name='Дата закрытия')
+    finished_application = models.DateTimeField(
+        auto_now=True, verbose_name='Дата закрытия',
+        blank=True,
+    )
     client = models.ForeignKey(
         User, on_delete=models.CASCADE,
         limit_choices_to={'user_type': 'CLIENT'}, 
