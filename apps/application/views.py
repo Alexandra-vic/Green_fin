@@ -46,12 +46,25 @@ class AssignOperatorAPIView(generics.UpdateAPIView):
         return JsonResponse({'message': 'success'}, status=200)
 
 
-class BrigadeStatusUpdateView(generics.UpdateAPIView):
-    queryset = User.objects.filter(user_type='BRIGADE')
-    serializer_class = ApplicationSerializer
+class BrigadeStatusUpdateView(APIView):
+    def patch(self, request, pk):
+        try:
+            brigade = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({"error": "Пользователь не найден"}, status=status.HTTP_404_NOT_FOUND)
 
-    def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
+        # Check if the user is a brigade
+        user = request.user
+        if user.user_type != 'BRIGADE':
+            return Response({"error": "Недопустимая роль пользователя"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update the brigade_status field
+        brigade_status = request.data.get('brigade_status')
+        if brigade_status is not None:
+            brigade.brigade_status = brigade_status
+            brigade.save()
+
+        return Response({"success": "Статус бригады успешно обновлен"})
 
 
 class BrigadeListAPIView(generics.ListAPIView):
