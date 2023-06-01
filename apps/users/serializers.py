@@ -36,7 +36,7 @@ class OperatorRegistrationSerializer(BaseRegistrationSerializer):
 class BrigadeRegistrationSerializer(BaseRegistrationSerializer):
     class Meta(BaseRegistrationSerializer.Meta):
         fields = BaseRegistrationSerializer.Meta.fields + (
-            'brigades_name', 'brigades_list', 'user_type',)
+            'brigades_name', 'brigades_list', 'phone', 'user_type',)
 
     def create(self, validated_data):
         validated_data['user_type'] = 'BRIGADE'
