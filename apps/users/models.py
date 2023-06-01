@@ -47,6 +47,9 @@ class User(AbstractUser):
         max_length=255, blank=True,
         null=True, verbose_name='Список участников бригады'
     )
+    brigade_status = models.BooleanField(
+        default=False, verbose_name='Бригада на выезде?'
+    )
     company_name = models.CharField(
         max_length=100, blank=True,
         null=True, verbose_name='Название компании'
