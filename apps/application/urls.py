@@ -1,25 +1,16 @@
 from django.urls import path
-from apps.application.views import (
-    ClientApplicationListAPIView,
-    ClientApplicationCreateAPIView,
-    ApplicationListAPIView,
-    AssignOperatorAPIView,
-    BrigadeListAPIView,
-    AddBrigadeAPIView,
-    BrigadeApplicationsAPIView,
-    ApplicationStatusUpdateAPIView,
-)
+from apps.application import views
 
 
 urlpatterns=[
-    path('client/application/create/', ClientApplicationCreateAPIView.as_view()),
-    path('client/applications/', ClientApplicationListAPIView.as_view()),
+    path('client/application/create/', views.ClientApplicationCreateAPIView.as_view()),
+    path('client/applications/', views.ClientApplicationListAPIView.as_view()),
 
-    path('applications/', ApplicationListAPIView.as_view()),
-    path('operator/<int:pk>/my_applications/', AssignOperatorAPIView.as_view()),
+    path('applications/', views.ApplicationListAPIView.as_view()),
+    path('operator/<int:pk>/my_applications/', views.AssignOperatorAPIView.as_view()),
 
-    path('brigades/', BrigadeListAPIView.as_view(), name='brigade-list'),
-    path('add_brigade/<int:pk>/', AddBrigadeAPIView.as_view()),
-    path('brigade/applications/', BrigadeApplicationsAPIView.as_view()),
-    path('change_status/<int:pk>/', ApplicationStatusUpdateAPIView.as_view()),
+    path('brigades/', views.BrigadeListAPIView.as_view(), name='brigade-list'),
+    path('add_brigade/<int:pk>/', views.AddBrigadeAPIView.as_view()),
+    path('brigade/applications/', views.BrigadeApplicationsAPIView.as_view()),
+    path('change_status/<int:pk>/', views.ApplicationStatusUpdateAPIView.as_view()),
 ]
