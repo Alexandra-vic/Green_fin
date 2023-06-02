@@ -69,33 +69,3 @@ class AddBrigadeAPIView(generics.UpdateAPIView):
             return JsonResponse({'message': 'success'}, status=200)
         else:
             return JsonResponse({'message': 'error', 'comment':'field brigade is required'}, status=400)
-
-
-class ApplicationStatusUpdateAPIView(APIView):
-    def patch(self, request, pk):
-        try:
-            application = Application.objects.get(pk=pk)
-        except Application.DoesNotExist:
-            return Response({"error": "Заявка не найдена"}, status=status.HTTP_404_NOT_FOUND)
-        
-        user = request.user
-        role = user.user_type
-        
-        if role == 'BRIGADE':
-            field_name = 'finished_by_brigade'
-            status_value = 'Выполнено' if request.data.get(field_name) else 'В процессе'
-        elif role == 'CLIENT':
-            field_name = 'finished_by_client'
-            status_value = 'Выполнено' if request.data.get(field_name) else 'В процессе'
-        elif role == 'OPERATOR':
-            field_name = 'finished_by_operator'
-            status_value = 'Выполнено' if request.data.get(field_name) else 'В процессе'
-        else:
-            return Response({"error": "Недопустимая роль пользователя"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        setattr(application, field_name, request.data.get(field_name))
-        application.status = status_value
-        application.save()
-        
-        serializer = ApplicationSerializer(application)
-        return Response(serializer.data)
