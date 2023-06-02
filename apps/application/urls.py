@@ -12,5 +12,4 @@ urlpatterns=[
     path('brigades/', views.BrigadeListAPIView.as_view(), name='brigade-list'),
     path('add_brigade/<int:pk>/', views.AddBrigadeAPIView.as_view()),
     path('brigade/applications/', views.BrigadeApplicationsAPIView.as_view()),
-    path('change_status/<int:pk>/', views.ApplicationStatusUpdateAPIView.as_view()),
 ]
