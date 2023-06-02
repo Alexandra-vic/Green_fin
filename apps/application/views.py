@@ -31,8 +31,6 @@ class ClientApplicationListAPIView(generics.ListAPIView):
 class ApplicationListAPIView(generics.ListAPIView):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['status']
 
 
 class AssignOperatorAPIView(generics.UpdateAPIView):
