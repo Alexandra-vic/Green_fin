@@ -1,15 +1,15 @@
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 from apps.home.views import (
-    SectionView, RulesView,
-    PointView, ContactView,
+    CategoryListView, SectionListView, 
+    RulesListView, ContactListView,
+    PointListView,
 )
 
 
-router = DefaultRouter()
-router.register('sections/', SectionView, basename='sections')
-router.register('rules/', RulesView, basename='rules')
-router.register('point/', PointView, basename='point')
-router.register('contact/', ContactView, basename='contact')
-
-
-urlpatterns = router.urls
+urlpatterns=[
+    path('category_section/', CategoryListView.as_view()),
+    path('sections/', SectionListView.as_view()),
+    path('rules/', RulesListView.as_view()),
+    path('contacts/', ContactListView.as_view()),
+    path('point/', PointListView.as_view()),
+]

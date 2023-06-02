@@ -1,14 +1,15 @@
 from django.urls import path
-
 from apps.application import views
 
 
-urlpatterns = [
+urlpatterns=[
+    path('client/application/create/', views.ClientApplicationCreateAPIView.as_view()),
     path('client/applications/', views.ClientApplicationListAPIView.as_view()),
-    path('client/application/create', views.ClientApplicationCreateAPIView.as_view()),
 
-    # path('operator/appications/', views.OperatorApplicationListAPIView.as_view()),
-    # path('operator/<int:pk>/', views.OperatorApplicationUpdateAPIView.as_view()),
+    path('applications/', views.ApplicationListAPIView.as_view()),
+    path('operator/<int:pk>/my_applications/', views.AssignOperatorAPIView.as_view()),
 
-    # path('brigade/applications/')
+    path('brigades/', views.BrigadeListAPIView.as_view(), name='brigade-list'),
+    path('add_brigade/<int:pk>/', views.AddBrigadeAPIView.as_view()),
+    path('brigade/applications/', views.BrigadeApplicationsAPIView.as_view()),
 ]
