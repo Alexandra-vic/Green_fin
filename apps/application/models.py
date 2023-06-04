@@ -58,12 +58,15 @@ class Application(models.Model):
     )
     finished_by_client = models.BooleanField(
         default=None, verbose_name='Отметить как Выпонено клиентом ',
+        blank=True, null=True,
     )
     finished_by_brigade = models.BooleanField(
         default=None, verbose_name='Отметить как Выпонено бригадой ',
+        blank=True, null=True,
     )
     finished_by_operator = models.BooleanField(
         default=None, verbose_name='Отметить как Выпонено оператором ',
+        blank=True, null=True,
     )
 
     def __str__(self):
