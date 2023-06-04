@@ -11,6 +11,7 @@ urlpatterns=[
     path('add_brigade/<int:pk>/', views.AddBrigadeAPIView.as_view()),
     path('brigade/<int:pk>/status/', views.BrigadeStatusUpdateView.as_view()),
     path('in_progressing_status/<int:pk>/', views.BrigadeApplicationStatusUpdateAPIView.as_view()),
-
+    
+    path('all_applications/', views.AllApplicationAPIView.as_view()),
     path('change_status/<int:pk>/', views.ApplicationStatusUpdateAPIView.as_view()),
 ]

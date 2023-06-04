@@ -25,6 +25,11 @@ class ClientApplicationCreateAPIView(generics.CreateAPIView):
         serializer.save(client=self.request.user)      
 
 
+class AllApplicationAPIView(generics.ListAPIView):
+    queryset = Application.objects.all()
+    serializer_class = OperatorApplicationSerializer
+
+
 class ApplicationListAPIView(generics.ListAPIView):
     def get_serializer_class(self):
         user = self.request.user
