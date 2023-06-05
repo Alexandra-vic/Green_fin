@@ -29,7 +29,8 @@ class BaseRegistrationSerializer(serializers.ModelSerializer):
 class OperatorRegistrationSerializer(BaseRegistrationSerializer):
     class Meta(BaseRegistrationSerializer.Meta):
         fields = BaseRegistrationSerializer.Meta.fields + (
-            'full_name', 'user_type',)
+            'full_name', 'user_type',
+        )
 
     def create(self, validated_data):
         validated_data['user_type'] = 'OPERATOR'
@@ -38,10 +39,15 @@ class OperatorRegistrationSerializer(BaseRegistrationSerializer):
 
 
 class BrigadeRegistrationSerializer(BaseRegistrationSerializer):
+
+    def get_application_count(self, obj):
+        return obj.applications_as_brigade.count()
+    
     class Meta(BaseRegistrationSerializer.Meta):
         fields = BaseRegistrationSerializer.Meta.fields + (
             'brigades_name', 
             'brigades_list', 
+            'phone',
             'user_type', 
             'brigade_status',
         )
@@ -50,6 +56,22 @@ class BrigadeRegistrationSerializer(BaseRegistrationSerializer):
         validated_data['user_type'] = 'BRIGADE'
         user = User.objects.create_user(**validated_data)
         return user
+
+
+class BrigadeSerializer(serializers.ModelSerializer):
+    application_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'brigades_name', 
+            'brigades_list', 
+            'phone',
+            'user_type', 
+            'brigade_status',
+            'application_count',
+        )
 
 
 class ClientRegistrationSerializer(BaseRegistrationSerializer):
@@ -74,10 +96,16 @@ class ClientRegistrationSerializer(BaseRegistrationSerializer):
     def create(self, validated_data):
             email = validated_data.get('email')
             password = validated_data.get('password')
+            company_name=validated_data.get('company_name'),
+            address=validated_data.get('address'),
+            phone=validated_data.get('phone'),
             user = User.objects.create_user(
                 email=email,
                 password=password,
-                user_type='CLIENT'
+                user_type='CLIENT',
+                company_name=company_name,
+                address=address,
+                phone=phone,
             )
             return user
 

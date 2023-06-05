@@ -1,14 +1,12 @@
-from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import generics
 from rest_framework import status
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import filters
 
 from apps.application.models import Application
 from apps.users.models import User
-from apps.users.serializers import BrigadeRegistrationSerializer
+from apps.users.serializers import BrigadeSerializer
 from apps.application.serializers import (
     ClientApplicationSerializer,
     OperatorApplicationSerializer,
@@ -26,7 +24,7 @@ class ClientApplicationCreateAPIView(generics.CreateAPIView):
 
 
 class AllApplicationAPIView(generics.ListAPIView):
-    queryset = Application.objects.all()
+    queryset = Application.objects.filter(operator__isnull=True)
     serializer_class = OperatorApplicationSerializer
 
 
@@ -49,7 +47,7 @@ class ApplicationListAPIView(generics.ListAPIView):
         elif user.user_type == 'OPERATOR':
             return Application.objects.filter(operator=user)
         elif user.user_type == 'BRIGADE':
-            return Application.objects.filter(brigade=user.brigade_name)
+            return Application.objects.filter(brigade=user)
 
 
 class AssignOperatorAPIView(generics.UpdateAPIView):
@@ -65,20 +63,12 @@ class AssignOperatorAPIView(generics.UpdateAPIView):
 
 class BrigadeStatusUpdateView(generics.UpdateAPIView):
     queryset = User.objects.all()
-    serializer_class = BrigadeRegistrationSerializer
-    lookup_field = 'pk'
-
-    def partial_update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.brigade_status = request.data.get('brigade_status')
-        instance.save()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+    serializer_class = BrigadeSerializer
 
 
 class BrigadeListAPIView(generics.ListAPIView):
     queryset = User.objects.filter(user_type='BRIGADE')
-    serializer_class = BrigadeRegistrationSerializer
+    serializer_class = BrigadeSerializer
 
 
 class AddBrigadeAPIView(generics.UpdateAPIView):
@@ -87,21 +77,24 @@ class AddBrigadeAPIView(generics.UpdateAPIView):
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
-        brigade_id = request.data.get('brigade')
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
 
-        if brigade_id:
-            
-            brigade = User.objects.filter(id=brigade_id, user_type='BRIGADE').first()
+        brigade = serializer.validated_data.get('brigade')
+        
+        if brigade:
+            brigade_id = brigade.id
 
-            if not brigade:
-                return Response({'message': 'error', 'comment':'brigade not found'}, status=400)
+            try:
+                brigade = User.objects.get(id=brigade_id, user_type='BRIGADE')
+            except ObjectDoesNotExist:
+                return Response({'message': 'error', 'comment': 'brigade not found'}, status=400)
             
-            instance.brigade = brigade
-            instance.save()
+            serializer.update(instance, {'brigade': brigade})
 
             return Response({'message': 'success'}, status=200)
         else:
-            return Response({'message': 'error', 'comment':'field brigade is required'}, status=400)
+            return Response({'message': 'error', 'comment': 'field brigade is required'}, status=400)
 
 
 class BrigadeApplicationStatusUpdateAPIView(generics.UpdateAPIView):
