@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from apps.application.models import Application
-from apps.users.serializers import BrigadeRegistrationSerializer
 
 
 class ClientApplicationSerializer(serializers.ModelSerializer):
@@ -15,6 +14,8 @@ class ClientApplicationSerializer(serializers.ModelSerializer):
 
 
 class ClientApplicationListSerializer(serializers.ModelSerializer):
+    brigade_phone = serializers.ReadOnlyField(source='brigade.phone')
+
     class Meta:
         model = Application
         fields = (
@@ -25,6 +26,8 @@ class ClientApplicationListSerializer(serializers.ModelSerializer):
             'status',
             'finished_by_client',
             'operator',
+            'brigade_phone',
+            'brigade',
         )
 
 
@@ -32,7 +35,8 @@ class OperatorApplicationSerializer(serializers.ModelSerializer):
     client_email = serializers.ReadOnlyField(source='client.email')
     client_phone = serializers.ReadOnlyField(source='client.phone')
     client_address = serializers.ReadOnlyField(source='client.address')
-    brigade_status = serializers.ReadOnlyField(source='brigade.brigade_status')
+    brigade_phone = serializers.ReadOnlyField(source='brigade.phone')
+    brigade_status = serializers.ReadOnlyField(source='user.brigade_status')
 
     class Meta:
         model = Application
@@ -47,6 +51,7 @@ class OperatorApplicationSerializer(serializers.ModelSerializer):
             'client_phone',
             'operator',
             'brigade',
+            'brigade_phone',
             'brigade_status',
             'finished_application',
             'finished_by_operator',
@@ -54,10 +59,10 @@ class OperatorApplicationSerializer(serializers.ModelSerializer):
 
 
 class BrigadeApplicationSerializer(serializers.ModelSerializer):
-    client_email = serializers.ReadOnlyField(source='client.email')
-    client_phone = serializers.ReadOnlyField(source='client.phone')
-    client_address = serializers.ReadOnlyField(source='client.address')
-    brigade_status = serializers.ReadOnlyField(source='brigade.brigade_status')
+    client_email = serializers.ReadOnlyField(source='user.email')
+    client_phone = serializers.ReadOnlyField(source='user.phone')
+    client_address = serializers.ReadOnlyField(source='user.address')
+    brigade_status = serializers.ReadOnlyField(source='user.brigade_status')
 
     class Meta:
         model = Application
