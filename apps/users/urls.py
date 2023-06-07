@@ -25,8 +25,6 @@ urlpatterns = [
     path('brigades/register/', views.BrigadeRegisterView.as_view(), name='brigade-reg'),
 
     path('', include(router.urls)),
-    # path('clients/', views.ClientListView.as_view(), name='client-list'),
-    # path('clients/<int:pk>/', views.ClientDetailView.as_view(), name='client-detail'),
     path('clients/register/', views.ClientRegisterView.as_view(), name='client-reg'),
 
     path('login/', views.UserLoginView.as_view(), name='login'),

@@ -11,12 +11,16 @@ class BaseRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'id', 'email', 'password', 'password_confirmation',
+            'id', 
+            'email', 
+            'password', 
+            'password_confirmation',
         )
 
     def validate(self, attrs):
         password = attrs.get('password')
         password_confirmation = attrs.pop('password_confirmation', None)
+
         if password != password_confirmation:
             raise serializers.ValidationError("Пароли не совпадают")
         return attrs
@@ -25,7 +29,8 @@ class BaseRegistrationSerializer(serializers.ModelSerializer):
 class OperatorRegistrationSerializer(BaseRegistrationSerializer):
     class Meta(BaseRegistrationSerializer.Meta):
         fields = BaseRegistrationSerializer.Meta.fields + (
-            'full_name', 'user_type',)
+            'full_name', 'user_type',
+        )
 
     def create(self, validated_data):
         validated_data['user_type'] = 'OPERATOR'
@@ -34,14 +39,38 @@ class OperatorRegistrationSerializer(BaseRegistrationSerializer):
 
 
 class BrigadeRegistrationSerializer(BaseRegistrationSerializer):
+    application_count = serializers.SerializerMethodField()
+
+    def get_application_count(self, obj):
+        return obj.applications_as_brigade.count()
+    
     class Meta(BaseRegistrationSerializer.Meta):
         fields = BaseRegistrationSerializer.Meta.fields + (
-            'brigades_name', 'brigades_list', 'phone', 'user_type',)
+            'brigades_name', 
+            'brigades_list', 
+            'phone',
+            'user_type', 
+            'brigade_status',
+            'application_count',
+        )
 
     def create(self, validated_data):
         validated_data['user_type'] = 'BRIGADE'
         user = User.objects.create_user(**validated_data)
         return user
+
+
+class BrigadeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'brigades_name', 
+            'brigades_list', 
+            'phone',
+            'user_type', 
+            'brigade_status',
+        )
 
 
 class ClientRegistrationSerializer(BaseRegistrationSerializer):
@@ -52,7 +81,10 @@ class ClientRegistrationSerializer(BaseRegistrationSerializer):
     class Meta(BaseRegistrationSerializer.Meta):
         fields = BaseRegistrationSerializer.Meta.fields + (
             'email',
-            'company_name', 'address', 'phone', )
+            'company_name',
+            'address',
+            'phone',
+        )
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
@@ -71,6 +103,19 @@ class ClientRegistrationSerializer(BaseRegistrationSerializer):
             return user
 
 
+class ClientProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'email',
+            'password',
+            'company_name',
+            'address',
+            'phone',
+        )
+
+
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
@@ -79,6 +124,7 @@ class UserLoginSerializer(serializers.Serializer):
         email = attrs.get('email')
         password = attrs.get('password')
         user = User.objects.filter(email=email).first()
+        
         if email and password:
             user = authenticate(
                 request=self.context.get('request'),
@@ -102,3 +148,4 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
             'id',
             'email',
         ]
+        

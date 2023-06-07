@@ -48,7 +48,8 @@ class User(AbstractUser):
         null=True, verbose_name='Список участников бригады'
     )
     brigade_status = models.BooleanField(
-        default=False, verbose_name='Бригада на выезде?'
+        default=False, verbose_name='Бригада на выезде?',
+        blank=True,
     )
     company_name = models.CharField(
         max_length=100, blank=True,
@@ -80,3 +81,4 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+    

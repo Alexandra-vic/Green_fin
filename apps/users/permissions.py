@@ -1,5 +1,5 @@
 from rest_framework.permissions import BasePermission
-
+    
 
 class OperatorPermission(BasePermission):
     def has_permission(self, request, view):
