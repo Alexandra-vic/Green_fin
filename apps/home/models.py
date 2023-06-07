@@ -21,7 +21,7 @@ class Section(models.Model):
     )
     description = models.TextField(verbose_name='Текст')
     category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, 
+        Category, on_delete=models.CASCADE,
         related_name='section_name', verbose_name='Категория'
     )
 
@@ -70,20 +70,13 @@ class Contact(models.Model):
 
 
 class Point(models.Model):
-    location = models.CharField(
+    link = models.URLField(
         max_length=70, verbose_name='Адрес'
-    )
-    time = models.CharField(
-        max_length=70, verbose_name='Часы работы'
-    )
-    phone = models.CharField(
-        max_length=15, validators=[RegexValidator(r'^[0-9()+]+$', 'Enter a valid phone number.')],
-        verbose_name='Номер телефона',
     )
 
     def __str__(self):
         return self.location
-    
+
     class Meta:
         verbose_name = 'Точка приема'
         verbose_name_plural = 'Точки приема'

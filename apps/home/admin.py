@@ -1,9 +1,9 @@
 from django.contrib import admin
 from apps.home.models import (
-    Point, Section, 
+    Point, Section,
     Rules, Contact,
     Category,
-)    
+)  
 
 
 @admin.register(Point)

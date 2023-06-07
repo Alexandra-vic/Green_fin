@@ -52,6 +52,19 @@ class BrigadeRegistrationSerializer(BaseRegistrationSerializer):
         return user
 
 
+class BrigadeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'brigades_name', 
+            'brigades_list', 
+            'phone',
+            'user_type', 
+            'brigade_status',
+        )
+
+
 class ClientRegistrationSerializer(BaseRegistrationSerializer):
     company_name = serializers.CharField()
     address = serializers.CharField()

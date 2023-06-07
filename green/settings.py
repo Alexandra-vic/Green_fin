@@ -26,21 +26,27 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
-    'djoser',
     'corsheaders',
     'ckeditor',
-    'embed_video',
 
     'apps.home',
     'apps.application',
-    'apps.home',
     'apps.users',
 ]
 
 
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (51.505, -0.09),
+    'DEFAULT_ZOOM': 13,
+    'TILES': 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    'ATTRIBUTION_PREFIX': 'Map data © OpenStreetMap contributors',
+}
+
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny'
+        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
@@ -135,9 +141,13 @@ WSGI_APPLICATION = 'green.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': '5432'
+    },
 }
 
 
@@ -171,7 +181,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 
 MEDIA_URL = "/uploads/"
-MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 CKEDITOR_UPLOAD_PATH = "uploads/"

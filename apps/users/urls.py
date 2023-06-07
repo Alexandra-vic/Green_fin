@@ -17,7 +17,7 @@ urlpatterns = [
 
 urlpatterns = [
     path('operators/', views.OperatorListView.as_view(), name='operator-list'),
-    path('operators/register', views.OperatorRegisterView.as_view(), name='operator-reg'),
+    path('operators/register/', views.OperatorRegisterView.as_view(), name='operator-reg'),
     path('operators/<int:pk>/', views.OperatorDetailView.as_view(), name='operator-detail'),
 
     path('brigades/', views.BrigadeListView.as_view(), name='brigade-list'),

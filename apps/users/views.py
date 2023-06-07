@@ -24,8 +24,9 @@ class OperatorListView(generics.ListAPIView):
 class OperatorRegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = OperatorRegistrationSerializer
-    permission_classes = [permissions.IsAuthenticated, OperatorPermission]
-
+    # permission_classes = [permissions.IsAuthenticated, OperatorPermission]
+    permission_classes = [permissions.AllowAny]
+    
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
