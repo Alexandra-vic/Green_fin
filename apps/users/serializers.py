@@ -81,9 +81,9 @@ class ClientRegistrationSerializer(BaseRegistrationSerializer):
     class Meta(BaseRegistrationSerializer.Meta):
         fields = BaseRegistrationSerializer.Meta.fields + (
             'email',
-            'company_name', 
-            'address', 
-            'phone', 
+            'company_name',
+            'address',
+            'phone',
         )
 
     def validate_email(self, value):
@@ -95,16 +95,10 @@ class ClientRegistrationSerializer(BaseRegistrationSerializer):
     def create(self, validated_data):
             email = validated_data.get('email')
             password = validated_data.get('password')
-            company_name=validated_data.get('company_name'),
-            address=validated_data.get('address'),
-            phone=validated_data.get('phone'),
             user = User.objects.create_user(
                 email=email,
                 password=password,
-                user_type='CLIENT',
-                company_name=company_name,
-                address=address,
-                phone=phone,
+                user_type='CLIENT'
             )
             return user
 
