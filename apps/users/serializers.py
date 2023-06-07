@@ -109,6 +109,19 @@ class ClientRegistrationSerializer(BaseRegistrationSerializer):
             return user
 
 
+class ClientProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'email',
+            'password',
+            'company_name',
+            'address',
+            'phone',
+        )
+
+
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
