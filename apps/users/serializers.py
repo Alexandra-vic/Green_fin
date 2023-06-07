@@ -39,6 +39,7 @@ class OperatorRegistrationSerializer(BaseRegistrationSerializer):
 
 
 class BrigadeRegistrationSerializer(BaseRegistrationSerializer):
+    application_count = serializers.SerializerMethodField()
 
     def get_application_count(self, obj):
         return obj.applications_as_brigade.count()
@@ -50,6 +51,7 @@ class BrigadeRegistrationSerializer(BaseRegistrationSerializer):
             'phone',
             'user_type', 
             'brigade_status',
+            'application_count',
         )
 
     def create(self, validated_data):
@@ -59,8 +61,6 @@ class BrigadeRegistrationSerializer(BaseRegistrationSerializer):
 
 
 class BrigadeSerializer(serializers.ModelSerializer):
-    application_count = serializers.SerializerMethodField()
-
     class Meta:
         model = User
         fields = (
@@ -70,7 +70,6 @@ class BrigadeSerializer(serializers.ModelSerializer):
             'phone',
             'user_type', 
             'brigade_status',
-            'application_count',
         )
 
 

@@ -66,11 +66,6 @@ class BrigadeStatusUpdateView(generics.UpdateAPIView):
     serializer_class = BrigadeSerializer
 
 
-class BrigadeListAPIView(generics.ListAPIView):
-    queryset = User.objects.filter(user_type='BRIGADE')
-    serializer_class = BrigadeSerializer
-
-
 class AddBrigadeAPIView(generics.UpdateAPIView):
     queryset = Application.objects.all()
     serializer_class = OperatorApplicationSerializer

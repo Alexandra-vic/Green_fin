@@ -54,6 +54,8 @@ class OperatorApplicationSerializer(serializers.ModelSerializer):
             'brigade_phone',
             'brigade_status',
             'finished_application',
+            'finished_by_client',
+            'finished_by_brigade',
             'finished_by_operator',
         )
 
