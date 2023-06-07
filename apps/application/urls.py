@@ -1,7 +1,8 @@
 from django.urls import path
 from apps.application import views
 
-urlpatterns=[
+
+urlpatterns = [
     path('client/application/create/', views.ClientApplicationCreateAPIView.as_view(), name='client-application-create'),
 
     path('applications/', views.ApplicationListAPIView.as_view(), name='application-list'),

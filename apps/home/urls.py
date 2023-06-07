@@ -1,12 +1,12 @@
 from django.urls import path
 from apps.home.views import (
-    CategoryListView, SectionListView, 
+    CategoryListView, SectionListView,
     RulesListView, ContactListView,
     PointListView,
 )
 
 
-urlpatterns=[
+urlpatterns = [
     path('category_section/', CategoryListView.as_view()),
     path('sections/', SectionListView.as_view()),
     path('rules/', RulesListView.as_view()),
