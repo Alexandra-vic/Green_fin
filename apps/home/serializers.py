@@ -53,7 +53,5 @@ class PointSerializer(serializers.ModelSerializer):
         model = Point
         fields = (
             'id',
-            'location',
-            'time',
-            'phone',
+            'link',
         )

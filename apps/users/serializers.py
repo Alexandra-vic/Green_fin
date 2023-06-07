@@ -21,6 +21,7 @@ class BaseRegistrationSerializer(serializers.ModelSerializer):
         password = attrs.get('password')
         password_confirmation = attrs.pop('password_confirmation', None)
 
+
         if password != password_confirmation:
             raise serializers.ValidationError("Пароли не совпадают")
         return attrs
@@ -124,7 +125,7 @@ class UserLoginSerializer(serializers.Serializer):
         email = attrs.get('email')
         password = attrs.get('password')
         user = User.objects.filter(email=email).first()
-        
+    
         if email and password:
             user = authenticate(
                 request=self.context.get('request'),
@@ -144,8 +145,7 @@ class UserLoginSerializer(serializers.Serializer):
 class ResetPasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = [
+        fields = (
             'id',
             'email',
-        ]
-        
+        )

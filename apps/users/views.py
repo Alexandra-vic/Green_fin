@@ -9,7 +9,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from apps.users.models import User
 from apps.users.serializers import (
     OperatorRegistrationSerializer, BrigadeRegistrationSerializer,
-    ClientRegistrationSerializer, UserLoginSerializer, ResetPasswordSerializer
+    ClientRegistrationSerializer, ClientProfileSerializer,
+    UserLoginSerializer, ResetPasswordSerializer
 )
 from apps.users.permissions import OperatorPermission
 
@@ -23,8 +24,9 @@ class OperatorListView(generics.ListAPIView):
 class OperatorRegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = OperatorRegistrationSerializer
-    permission_classes = [permissions.IsAuthenticated, OperatorPermission]
-
+    # permission_classes = [permissions.IsAuthenticated, OperatorPermission]
+    permission_classes = [permissions.AllowAny]
+    
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -48,7 +50,7 @@ class OperatorDetailView(generics.RetrieveUpdateDestroyAPIView):
 class BrigadeRegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = BrigadeRegistrationSerializer
-    permission_classes = [OperatorPermission]
+    permission_classes = [permissions.IsAuthenticated, OperatorPermission, ]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -67,7 +69,7 @@ class BrigadeRegisterView(generics.CreateAPIView):
 class BrigadeListView(generics.ListAPIView):
     queryset = User.objects.filter(user_type='BRIGADE')
     serializer_class = BrigadeRegistrationSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, ]
 
 
 class BrigadeDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -92,12 +94,15 @@ class ClientRegisterView(generics.CreateAPIView):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
             'user_type': user.user_type,
+            'email': user.email,
+            'address': user.address,
+            'phone': user.phone,
         }, status=status.HTTP_201_CREATED)
 
 
 class ClientProfileViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(user_type='CLIENT')
-    serializer_class = ClientRegistrationSerializer
+    serializer_class = ClientProfileSerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
     @action(detail=False, methods=['get'])

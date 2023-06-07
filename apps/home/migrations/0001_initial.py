@@ -41,9 +41,7 @@ class Migration(migrations.Migration):
             name='Point',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('location', models.CharField(max_length=70, verbose_name='Адрес')),
-                ('time', models.CharField(max_length=70, verbose_name='Часы работы')),
-                ('phone', models.CharField(max_length=15, validators=[django.core.validators.RegexValidator('^[0-9()+]+$', 'Enter a valid phone number.')], verbose_name='Номер телефона')),
+                ('link', models.URLField(max_length=70, verbose_name='Адрес')),
             ],
             options={
                 'verbose_name': 'Точка приема',

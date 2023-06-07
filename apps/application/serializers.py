@@ -82,18 +82,3 @@ class BrigadeApplicationSerializer(serializers.ModelSerializer):
             'brigade',
             'brigade_status',
         )
-
-#     class Meta:
-#         model = Application
-#         fields = (
-#             'id',
-#             'started_create',
-#             'type',
-#             'comment',
-#             'status',
-#             'client_email',
-#             'client_phone',
-#             'client_address',
-#             'finished_application',
-#             'finished_by_brigade',
-#         )
